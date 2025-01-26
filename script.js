@@ -17,6 +17,7 @@ const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
+const showInventory = document.querySelector("#showInventory");
 const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
@@ -109,7 +110,7 @@ function update(location) {
 }
 
 function inventoryDisplay() {
-  console.log(inventory);
+  showInventory.innerHTML = inventory;
 }
 
 function goTown() {
