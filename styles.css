@@ -23,10 +23,12 @@ body {
   #inventoryMenu {
     width: 15vw;
     height: 90vh;
-    margin-top: 15px;
+    margin-top: 19px;
     padding: 10px;
-    background-color: #ffffff;
-    border: 5px solid #320d0d;
+    text-align: center;
+    color: #ffffff;
+    background-color: #320d0d;
+    border: 1px solid #ffffff;
   }
 
   #game {
