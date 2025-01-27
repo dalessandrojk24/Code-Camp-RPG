@@ -26,6 +26,7 @@ body {
     margin-top: 19px;
     padding: 10px;
     text-align: center;
+    display: none;
     color: #ffffff;
     background-color: #320d0d;
     border: 1px solid #ffffff;
@@ -37,6 +38,7 @@ body {
     background-color: #ffffff;
     color: #ffffff;
     margin-top: 20px;
+    margin-left: 20px;
     padding: 10px;
   }
   

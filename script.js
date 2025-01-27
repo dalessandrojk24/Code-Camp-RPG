@@ -18,6 +18,7 @@ const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
 const showInventory = document.querySelector("#showInventory");
+const inventoryMenu = document.querySelector("#inventoryMenu");
 const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
@@ -110,7 +111,14 @@ function update(location) {
 }
 
 function inventoryDisplay() {
-  showInventory.innerHTML = inventory;
+  const inventoryMenu = document.getElementById("inventoryMenu");
+  if (inventoryMenu.style.display === "none"){
+    inventoryMenu.style.display = "block";
+    showInventory.innerHTML = inventory;
+  }
+  else {
+    inventoryMenu.style.display = "none";
+  }
 }
 
 function goTown() {
