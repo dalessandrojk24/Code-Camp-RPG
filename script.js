@@ -1,10 +1,40 @@
+class Item {
+  constructor(name, quantity, category, tier, element){
+    this._name = name;
+    this._quantity= quantity;
+    this._category = category;
+    this._tier= tier;
+    this._element= element;
+  }
+
+  get quantity(){
+    return this._quantity;
+  }
+
+  set quantity(x){
+    if (x<10 && x>0){
+      console.log("I'm adding");
+      return this._quantity++;
+    }
+    else {
+       console.log("Your item quantity is full");
+      return this.quantity;
+    }
+  }
+}
+
+let chinderchager = new Item("chinder chager", 1);
+chinderchager.quantity = 1;
+
+console.log(chinderchager);
+
 let xp = 0;
 let health = 100;
 let gold = 50;
 let currentWeapon = 0;
 let fighting;
 let monsterHealth;
-let inventory = ["stick"];
+let inventory = [new Item("Stick")];
 
 const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
@@ -17,8 +47,8 @@ const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
-const showInventory = document.querySelector("#showInventory");
-const inventoryMenu = document.querySelector("#inventoryMenu");
+const inventoryList = document.querySelector("#inventoryList");
+const inventoryMenu = document.getElementById("inventoryMenu");
 const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
@@ -110,14 +140,29 @@ function update(location) {
   text.innerHTML = location.text;
 }
 
+//Makes the Inventory Menu pop up once it's clicked and disappear once clicked again
+// While also updating the inventory
 function inventoryDisplay() {
-  const inventoryMenu = document.getElementById("inventoryMenu");
   if (inventoryMenu.style.display === "none"){
     inventoryMenu.style.display = "block";
-    showInventory.innerHTML = inventory;
+    refreshInventory();
   }
   else {
     inventoryMenu.style.display = "none";
+  }
+}
+
+function refreshInventory(){
+  while (inventoryList.lastChild){
+    inventoryList.removeChild(inventoryList.lastChild)
+  }
+  for (let i = 0; i < inventory.length; i++){
+    //create a list item
+    let newItem = document.createElement("li");
+    //use inventory[i].name for the innerHTML of the list item
+    newItem.innerHTML = inventory[i].name
+    // add the new list item to the unordered list
+    inventoryList.appendChild(newItem)
   }
 }
 
@@ -301,3 +346,4 @@ function pick(guess) {
     }
   }
 }
+
