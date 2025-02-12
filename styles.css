@@ -17,7 +17,12 @@ body {
   }
 
   h1 {
+    font-size: 25px;
+    text-align: center;
+  }
+  h2 {
     font-size: 20px;
+    text-align: center;
   }
 
   #inventoryMenu {
@@ -25,7 +30,7 @@ body {
     height: 90vh;
     margin-top: 19px;
     padding: 10px;
-    text-align: center;
+    text-align: left;
     display: none;
     color: #ffffff;
     background-color: #320d0d;

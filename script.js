@@ -12,21 +12,23 @@ class Item {
   }
 
   set quantity(x){
-    if (x<10 && x>0){
-      console.log("I'm adding");
-      return this._quantity++;
+    if (x >= 0){
+      return this._quantity = x;
     }
     else {
-       console.log("Your item quantity is full");
-      return this.quantity;
+      console.log(`Your ${Item.name} quantity cannot be negative`);
+      return;
     }
   }
+
+  get name(){
+    return this._name;
+  }
+
+  set name(x){
+    this._name = x;
+  }
 }
-
-let chinderchager = new Item("chinder chager", 1);
-chinderchager.quantity = 1;
-
-console.log(chinderchager);
 
 let xp = 0;
 let health = 100;
@@ -34,7 +36,21 @@ let gold = 50;
 let currentWeapon = 0;
 let fighting;
 let monsterHealth;
-let inventory = [new Item("Stick")];
+const inventory = [];
+let stick = new Item("Stick", 1);
+let shield = new Item("Shield", 1);
+let herb = new Item("Herb", 9);
+let shieldIce = new Item("Shield Ice", 1);
+let potion = new Item("Potion", 0);
+let bomb = new Item("Bomb", "B");
+let filler1 = new Item("filler1", 1);
+let filler2 = new Item("filler2", 1);
+let filler3 = new Item("filler3", 1);
+let filler4 = new Item("filler4", 1);
+let filler5 = new Item("filler5", 1);
+let filler6 = new Item("filler6", 1);
+let filler7 = new Item("filler7", 1);
+
 
 const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
@@ -49,6 +65,13 @@ const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
 const inventoryList = document.querySelector("#inventoryList");
 const inventoryMenu = document.getElementById("inventoryMenu");
+const discardButton = document.getElementById("discardButton");
+const equipButton = document.getElementById("equipButton");
+const unequipButton = document.getElementById("unequipButton");
+const equipWeapon = document.querySelector("#equipWeapon");
+const equipShield = document.querySelector("#equipShield");
+const equipRing = document.querySelector("#equipRing");
+
 const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
@@ -140,7 +163,7 @@ function update(location) {
   text.innerHTML = location.text;
 }
 
-//Makes the Inventory Menu pop up once it's clicked and disappear once clicked again
+// Makes the Inventory Menu pop up once it's clicked and disappear once clicked again
 // While also updating the inventory
 function inventoryDisplay() {
   if (inventoryMenu.style.display === "none"){
@@ -152,18 +175,118 @@ function inventoryDisplay() {
   }
 }
 
+function changeColor(e){
+if(e.target.style.color==="red"){
+  e.target.style.color = "white"
+}
+else{
+  e.target.style.color = "red"
+};
+
+}
+
 function refreshInventory(){
   while (inventoryList.lastChild){
     inventoryList.removeChild(inventoryList.lastChild)
   }
   for (let i = 0; i < inventory.length; i++){
-    //create a list item
+    
     let newItem = document.createElement("li");
-    //use inventory[i].name for the innerHTML of the list item
-    newItem.innerHTML = inventory[i].name
-    // add the new list item to the unordered list
+    newItem.addEventListener("click", changeColor);
+    newItem.setAttribute("data-index", i);
+    newItem.style.color = "white"
+    newItem.innerHTML = inventory[i].name + " x " + inventory[i].quantity;
+ 
     inventoryList.appendChild(newItem)
   }
+}
+
+
+function addToInventory(item){
+
+  let found = inventory.find((a) => a._name === item._name);
+
+  let quan = item.quantity;
+  
+  if (typeof(quan) != "number"){
+    return;
+  }
+  if(inventory.length < 10){
+    if(!found){
+      if (item.quantity > 10){
+        item.quantity = 10;
+        inventory.push(item);
+        return;
+      } 
+      else if (item.quantity <= 0){
+        return;
+      }
+      else {
+        inventory.push(item);
+        return;
+      }
+      
+    }
+    else {
+         if (found.quantity === 10) {
+         return 
+         }
+        else if ((found.quantity + quan) > 10){
+        found.quantity = 10;
+        return 
+        }
+        else {
+        found.quantity = found.quantity + quan;
+        return 
+        }
+      }
+      
+    }
+  else{
+     return;
+    }
+  }
+//Testing Inventory Start:
+
+addToInventory(stick);
+addToInventory(stick);
+addToInventory(shield);
+addToInventory(shieldIce);
+addToInventory(herb);
+addToInventory(filler1);
+addToInventory(filler1);
+addToInventory(filler2);
+addToInventory(filler3);
+addToInventory(filler4);
+addToInventory(filler5);
+
+//Testing Inventory End: 
+
+function discardSelection(){
+ 
+  let collection = inventoryList.getElementsByTagName("li")
+  
+  for (let i = collection.length - 1; i >= 0; i--){
+    let index = parseInt(collection[i].dataset.index);
+    let color = collection[i].style.color;
+    if (color === "red"){
+      inventory.splice(i, 1);
+      
+    }  
+  }
+  refreshInventory();
+}
+
+discardButton.addEventListener("click", discardSelection);
+equipButton.addEventListener("click", equip);
+unequipButton.addEventListener("click", unequip);
+
+function equip(){
+  console.log("equip");
+}
+
+function unequip(){
+  console.log("unequip");
 }
 
 function goTown() {
