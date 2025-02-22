@@ -28,8 +28,24 @@ class Item {
   set name(x){
     this._name = x;
   }
+
+  get category(){
+    return this._category;
+  }
+
+  set category(x){
+    this._category = x;
+  }
 }
 
+class Character {
+  constructor(name){
+    this.name = name;
+    this.equipment = {};
+  }
+}
+
+let player = new Character("dayid");
 let xp = 0;
 let health = 100;
 let gold = 50;
@@ -38,18 +54,12 @@ let fighting;
 let monsterHealth;
 const inventory = [];
 let stick = new Item("Stick", 1);
-let shield = new Item("Shield", 1);
 let herb = new Item("Herb", 9);
-let shieldIce = new Item("Shield Ice", 1);
+let shieldRock = new Item("Rock Shield", 1, "shield");
+let shieldIce = new Item("Ice Shield", 1, "shield");
+let shieldFire = new Item("Fire Shield", 1, "shield");
 let potion = new Item("Potion", 0);
 let bomb = new Item("Bomb", "B");
-let filler1 = new Item("filler1", 1);
-let filler2 = new Item("filler2", 1);
-let filler3 = new Item("filler3", 1);
-let filler4 = new Item("filler4", 1);
-let filler5 = new Item("filler5", 1);
-let filler6 = new Item("filler6", 1);
-let filler7 = new Item("filler7", 1);
 
 
 const button1 = document.querySelector('#button1');
@@ -249,16 +259,11 @@ function addToInventory(item){
 //Testing Inventory Start:
 
 addToInventory(stick);
-addToInventory(stick);
-addToInventory(shield);
+addToInventory(shieldRock);
 addToInventory(shieldIce);
 addToInventory(herb);
-addToInventory(filler1);
-addToInventory(filler1);
-addToInventory(filler2);
-addToInventory(filler3);
-addToInventory(filler4);
-addToInventory(filler5);
+addToInventory(shieldFire);
+
 
 //Testing Inventory End: 
 
@@ -267,7 +272,7 @@ function discardSelection(){
   let collection = inventoryList.getElementsByTagName("li")
   
   for (let i = collection.length - 1; i >= 0; i--){
-    let index = parseInt(collection[i].dataset.index);
+    // let index = parseInt(collection[i].dataset.index);
     let color = collection[i].style.color;
     if (color === "red"){
       inventory.splice(i, 1);
@@ -280,9 +285,53 @@ function discardSelection(){
 discardButton.addEventListener("click", discardSelection);
 equipButton.addEventListener("click", equip);
 unequipButton.addEventListener("click", unequip);
+equipWeapon.addEventListener("click", changeColor);
+equipShield.addEventListener("click", changeColor);
+equipRing.addEventListener("click", changeColor);
 
 function equip(){
-  console.log("equip");
+  
+  const hold = [];
+  let collection = inventoryList.getElementsByTagName("li")
+  
+  for (let i = collection.length - 1; i >= 0; i--){
+   
+    let color = collection[i].style.color;
+    if (color === "red"){
+      hold.push(inventory[i]);
+    }
+  }
+  console.log(hold[0].category)
+    if (hold.length <= 0 || hold.length > 1){
+      console.log("Please select only one item to equip");
+      return;
+    }
+    if (hold[0].category != "weapon" && hold[0].category != "shield" && hold[0].category != "ring"){
+      console.log("Please select an item that you can equip");
+      return;
+    }
+    else {
+      console.log("suh dude")
+      if(!player.equipment[hold[0].category]){
+        player.equipment[hold[0].category] = hold[0]; 
+        updateEquipmentHTML();
+      }
+      else {
+        addToInventory(player.equipment[hold[0].category]);
+        player.equipment[hold[0].category] = hold[0]; 
+        updateEquipmentHTML();
+      }
+        //if main variable is occupied, take it, add it to inventory and remove it from the variable. Then add hold to the main variable and reset hold back to 0. 
+      //if main variable is not occupied, add hold to the main variable and reset hold back to 0. 
+     discardSelection(); 
+    }
+
+}
+
+function updateEquipmentHTML(){
+    equipWeapon.textContent = "Weapon: " + (player.equipment.weapon ? player.equipment.weapon.name : "");
+    equipShield.textContent = "Shield: " + (player.equipment.shield ? player.equipment.shield.name : "");
+    equipRing.textContent = "Ring: " + (player.equipment.ring ? player.equipment.ring.name : "");
 }
 
 function unequip(){

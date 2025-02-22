@@ -37,6 +37,10 @@ body {
     border: 1px solid #ffffff;
   }
 
+  #equipmentList {
+    text-align: left;
+  }
+
   #game {
     width: 60vw;
     height: 90vh;
