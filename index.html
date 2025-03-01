@@ -11,37 +11,26 @@
       <h1> Menu</h1>
       <h2> Inventory</h2>
       <ul id="inventoryList">
-
       </ul>
       <button id="discardButton">Discard</button>
       <button id="equipButton">Equip</button>
       <h2> Equipment</h2>
       <ul id="equipmentList">
-        <li id="equipWeapon">Weapon: </li>
-        <li id="equipShield">Shield: </li>
-        <li id="equipRing">Ring: </li>
+        <li id="equipWeapon" data-category="weapon">Weapon: </li>
+        <li id="equipShield" data-category="shield">Shield: </li>
+        <li id="equipRing" data-category="ring">Ring: </li>
       </ul>
       <button id="unequipButton">Unequip</button>
     </div>
     <div id="game">
-      <div id="stats">
-        <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
-        <span class="stat">Health: <strong><span id="healthText">100</span></strong></span>
-        <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
-      </div>
+      <h1 id="gameTitle">Dope A$$ Game</h1>
       <div id="controls">
         <button id="button1">Inventory</button>
-        <button id="button2">Go to store</button>
-        <button id="button3">Go to cave</button>
-        <button id="button4">Fight dragon</button>
-      </div>
-      <div id="monsterStats">
-        <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
-        <span class="stat">Health: <strong><span id="monsterHealth"></span></strong></span>
       </div>
       <div id="text">
         Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.
       </div>
+      <div id="image-container"></div>
     </div>
     <script src="./script.js"></script>
   </body>

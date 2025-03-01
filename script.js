@@ -46,34 +46,17 @@ class Character {
 }
 
 let player = new Character("dayid");
-let xp = 0;
-let health = 100;
-let gold = 50;
-let currentWeapon = 0;
-let fighting;
-let monsterHealth;
-const inventory = [];
-let stick = new Item("Stick", 1);
-let herb = new Item("Herb", 9);
+let stick = new Item("Stick", 1, "weapon");
+let herb = new Item("Herb", 9, "ring");
 let shieldRock = new Item("Rock Shield", 1, "shield");
 let shieldIce = new Item("Ice Shield", 1, "shield");
 let shieldFire = new Item("Fire Shield", 1, "shield");
-let potion = new Item("Potion", 0);
-let bomb = new Item("Bomb", "B");
 
-
+const inventory = [];
 const button1 = document.querySelector('#button1');
-const button2 = document.querySelector("#button2");
-const button3 = document.querySelector("#button3");
-const button4 = document.querySelector("#button4");
 const text = document.querySelector("#text");
-const xpText = document.querySelector("#xpText");
-const healthText = document.querySelector("#healthText");
-const goldText = document.querySelector("#goldText");
-const monsterStats = document.querySelector("#monsterStats");
-const monsterName = document.querySelector("#monsterName");
-const monsterHealthText = document.querySelector("#monsterHealth");
 const inventoryList = document.querySelector("#inventoryList");
+const equipmentList = document.querySelector("#equipmentList");
 const inventoryMenu = document.getElementById("inventoryMenu");
 const discardButton = document.getElementById("discardButton");
 const equipButton = document.getElementById("equipButton");
@@ -82,96 +65,13 @@ const equipWeapon = document.querySelector("#equipWeapon");
 const equipShield = document.querySelector("#equipShield");
 const equipRing = document.querySelector("#equipRing");
 
-const weapons = [
-  { name: 'stick', power: 5 },
-  { name: 'dagger', power: 30 },
-  { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 }
-];
-const monsters = [
-  {
-    name: "slime",
-    level: 2,
-    health: 15
-  },
-  {
-    name: "fanged beast",
-    level: 8,
-    health: 60
-  },
-  {
-    name: "dragon",
-    level: 20,
-    health: 300
-  }
-]
-const locations = [
-  {
-    name: "town square",
-    "button text": ["Inventory", "Go to store", "Go to cave", "Fight dragon"],
-    "button functions": [inventoryDisplay, goStore, goCave, fightDragon],
-    text: "You are in the town square. You see a sign that says \"Store\"."
-  },
-  {
-    name: "store",
-    "button text": ["Inventory", "Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Go to town square"],
-    "button functions": [inventoryDisplay, buyHealth, buyWeapon, goTown],
-    text: "You enter the store."
-  },
-  {
-    name: "cave",
-    "button text": ["Inventory", "Fight slime", "Fight fanged beast", "Go to town square"],
-    "button functions": [inventoryDisplay, fightSlime, fightBeast, goTown],
-    text: "You enter the cave. You see some monsters."
-  },
-  {
-    name: "fight",
-    "button text": ["Inventory", "Attack", "Dodge", "Run"],
-    "button functions": [inventoryDisplay, attack, dodge, goTown],
-    text: "You are fighting a monster."
-  },{
-    name: "kill monster",
-    "button text": ["Inventory", "Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [inventoryDisplay, goTown, goTown, easterEgg],
-    text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
-  }, {
-    name: "lose",
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"],
-    "button functions": [inventoryDisplay, restart, restart, restart],
-    text: "You die. &#x2620;"
-  },
-  { 
-    name: "win", 
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"], 
-    "button functions": [inventoryDisplay, restart, restart, restart], 
-    text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;" 
-  },
-  {
-    name: "easter egg",
-    "button text": ["Inventory", "2", "8", "Go to town square?"],
-    "button functions": [inventoryDisplay, pickTwo, pickEight, goTown],
-    text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
-  }
-];
+let img = document.createElement("img");
+img.src = "yeti.png";
+img.alt = "A yeti eating spaghetti";
+document.getElementById("image-container").appendChild(img);
 
 // initialize buttons
 button1.onclick = inventoryDisplay;
-button2.onclick = goStore;
-button3.onclick = goCave;
-button4.onclick = fightDragon;
-
-function update(location) {
-  monsterStats.style.display = "none";
-  button1.innerText = location["button text"][0];
-  button2.innerText = location["button text"][1];
-  button3.innerText = location["button text"][2];
-  button4.innerText = location["button text"][3];
-  button1.onclick = location["button functions"][0];
-  button2.onclick = location["button functions"][1];
-  button3.onclick = location["button functions"][2];
-  button4.onclick = location["button functions"][3];
-  text.innerHTML = location.text;
-}
 
 // Makes the Inventory Menu pop up once it's clicked and disappear once clicked again
 // While also updating the inventory
@@ -192,7 +92,6 @@ if(e.target.style.color==="red"){
 else{
   e.target.style.color = "red"
 };
-
 }
 
 function refreshInventory(){
@@ -200,17 +99,14 @@ function refreshInventory(){
     inventoryList.removeChild(inventoryList.lastChild)
   }
   for (let i = 0; i < inventory.length; i++){
-    
     let newItem = document.createElement("li");
     newItem.addEventListener("click", changeColor);
     newItem.setAttribute("data-index", i);
     newItem.style.color = "white"
     newItem.innerHTML = inventory[i].name + " x " + inventory[i].quantity;
- 
     inventoryList.appendChild(newItem)
   }
 }
-
 
 function addToInventory(item){
 
@@ -219,35 +115,41 @@ function addToInventory(item){
   let quan = item.quantity;
   
   if (typeof(quan) != "number"){
-    return;
+    return "item quantity is not a number";
   }
   if(inventory.length < 10){
     if(!found){
       if (item.quantity > 10){
         item.quantity = 10;
         inventory.push(item);
-        return;
+        //Inventory length is less than 10, no dupe item, but the item being added has a quantity of more than 10, set it to 10 and add to inventory
+        return "added to inventory";
       } 
       else if (item.quantity <= 0){
+        //item not found, but it's quantity being added is less than or equal to 0 so it doesn't affect the inventory
         return;
       }
       else {
         inventory.push(item);
-        return;
+        //item not found, quantity is in range, added to inventory
+        return "added to inventory";
       }
       
     }
     else {
          if (found.quantity === 10) {
-         return 
+          //dupe item found, item quantity in inventory is full though and item should not be unequipped
+         return "max";
          }
         else if ((found.quantity + quan) > 10){
         found.quantity = 10;
-        return 
+        //the dupe item found plus the incoming quantity is more than 10, set it to 10 but the quantity is still full and shouldn't be unequipped if so
+        return "max";
         }
         else {
         found.quantity = found.quantity + quan;
-        return 
+        //the dupe item found plus incoming item quantity is sufficient, it can be unequipped in this case 
+        return "enough room";
         }
       }
       
@@ -290,232 +192,104 @@ equipShield.addEventListener("click", changeColor);
 equipRing.addEventListener("click", changeColor);
 
 function equip(){
-  
   const hold = [];
   let collection = inventoryList.getElementsByTagName("li")
-  
   for (let i = collection.length - 1; i >= 0; i--){
    
     let color = collection[i].style.color;
     if (color === "red"){
+      //add all of the selected red items in the inventory to the hold variable
       hold.push(inventory[i]);
     }
   }
-  console.log(hold[0].category)
     if (hold.length <= 0 || hold.length > 1){
+      //there was either no items selected, or more than 1 items selected
       console.log("Please select only one item to equip");
       return;
     }
     if (hold[0].category != "weapon" && hold[0].category != "shield" && hold[0].category != "ring"){
+      //the one item that was selected is not a weapon, shield or a ring and cannot be equipped. 
       console.log("Please select an item that you can equip");
       return;
     }
     else {
-      console.log("suh dude")
       if(!player.equipment[hold[0].category]){
-        player.equipment[hold[0].category] = hold[0]; 
-        updateEquipmentHTML();
+        //the player is not already holding this type of equipment
+        let copyCat= deepCopy(hold[0]);
+        
+        player.equipment[hold[0].category] = copyCat; //add it to the equipment
+        copyCat.quantity = 1;
+        hold[0].quantity --; 
+        if (hold[0].quantity === 0){
+            discardSelection();
+        }
+        updateEquipmentHTML(); //update the html to show new equipment
+        refreshInventory();
       }
       else {
+        //the player is holding this type of equipment,
+        // We need to check, if addToInventory returns "max item quantity" > we cannot swap the incoming item for the item already equipped, bust out
+        // if addToInventory returns "enough room" > then we can swap the incoming item for the item already equipped
         addToInventory(player.equipment[hold[0].category]);
         player.equipment[hold[0].category] = hold[0]; 
         updateEquipmentHTML();
+        refreshInventory();
       }
-        //if main variable is occupied, take it, add it to inventory and remove it from the variable. Then add hold to the main variable and reset hold back to 0. 
-      //if main variable is not occupied, add hold to the main variable and reset hold back to 0. 
-     discardSelection(); 
+     //taking the selected item out of the inventory... but we should alter this to checking the item quantity
+     revertColor(equipmentList, "white"); //this changes the selected items back to white... no need to stay selected after the func fires. 
+     revertColor(inventoryList, "white");
     }
-
 }
 
+function deepCopy(arg){
+  return JSON.parse(JSON.stringify(arg), (key, value) => {
+    if(value && value._category === 'shield' || value._category === 'ring' || value._category === 'weapon'){return new Item (value._name, value._quantity, value._category, value._tier, value._element)}
+    return value;
+  });
+}
+
+function revertColor(parent, color){
+  let collection = parent.getElementsByTagName("li")
+  
+  for (let i = 0; i < collection.length; i++){
+    collection[i].style.color = color;
+  }
+}
+
+
 function updateEquipmentHTML(){
-    equipWeapon.textContent = "Weapon: " + (player.equipment.weapon ? player.equipment.weapon.name : "");
-    equipShield.textContent = "Shield: " + (player.equipment.shield ? player.equipment.shield.name : "");
-    equipRing.textContent = "Ring: " + (player.equipment.ring ? player.equipment.ring.name : "");
+    equipWeapon.textContent = "Weapon: " + (player.equipment.weapon ? player.equipment.weapon._name : "");
+    equipShield.textContent = "Shield: " + (player.equipment.shield ? player.equipment.shield._name : "");
+    equipRing.textContent = "Ring: " + (player.equipment.ring ? player.equipment.ring._name : "");
+}
+
+function unequipItem(category){
+  if(player.equipment[category]){
+      if(addToInventory(player.equipment[category])=== "max"){
+    console.log("too many held");
+    return;
+  }
+  else{
+    player.equipment[category] = "";
+   }
+ }
+else {
+  return "nothing equipped";
+}
 }
 
 function unequip(){
-  console.log("unequip");
-}
-
-function goTown() {
-  update(locations[0]);
-}
-
-function goStore() {
-  update(locations[1]);
-}
-
-function goCave() {
-  update(locations[2]);
-}
-
-function buyHealth() {
-  if (gold >= 10) {
-    gold -= 10;
-    health += 10;
-    goldText.innerText = gold;
-    healthText.innerText = health;
-  } else {
-    text.innerText = "You do not have enough gold to buy health.";
-  }
-}
-
-function buyWeapon() {
-  if (currentWeapon < weapons.length - 1) {
-    if (gold >= 30) {
-      gold -= 30;
-      currentWeapon++;
-      goldText.innerText = gold;
-      let newWeapon = weapons[currentWeapon].name;
-      text.innerText = "You now have a " + newWeapon + ".";
-      inventory.push(newWeapon);
-      text.innerText += " In your inventory you have: " + inventory;
-    } else {
-      text.innerText = "You do not have enough gold to buy a weapon.";
-    }
-  } else {
-    text.innerText = "You already have the most powerful weapon!";
-    button2.innerText = "Sell weapon for 15 gold";
-    button2.onclick = sellWeapon;
-  }
-}
-
-function sellWeapon() {
-  if (inventory.length > 1) {
-    gold += 15;
-    goldText.innerText = gold;
-    let currentWeapon = inventory.shift();
-    text.innerText = "You sold a " + currentWeapon + ".";
-    text.innerText += " In your inventory you have: " + inventory;
-  } else {
-    text.innerText = "Don't sell your only weapon!";
-  }
-}
-
-function fightSlime() {
-  fighting = 0;
-  goFight();
-}
-
-function fightBeast() {
-  fighting = 1;
-  goFight();
-}
-
-function fightDragon() {
-  fighting = 2;
-  goFight();
-}
-
-function goFight() {
-  update(locations[3]);
-  monsterHealth = monsters[fighting].health;
-  monsterStats.style.display = "block";
-  monsterName.innerText = monsters[fighting].name;
-  monsterHealthText.innerText = monsterHealth;
-}
-
-function attack() {
-  text.innerText = "The " + monsters[fighting].name + " attacks.";
-  text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
-  health -= getMonsterAttackValue(monsters[fighting].level);
-  if (isMonsterHit()) {
-    monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;    
-  } else {
-    text.innerText += " You miss.";
-  }
-  healthText.innerText = health;
-  monsterHealthText.innerText = monsterHealth;
-  if (health <= 0) {
-    lose();
-  } else if (monsterHealth <= 0) {
-    if (fighting === 2) {
-      winGame();
-    } else {
-      defeatMonster();
+  let collection = equipmentList.getElementsByTagName("li")
+  for (let i = collection.length - 1; i >= 0; i--){
+   
+    let color = collection[i].style.color;
+    if (color === "red"){
+      let cat = collection[i].dataset.category;
+      unequipItem(cat);
     }
   }
-  if (Math.random() <= .1 && inventory.length !== 1) {
-    text.innerText += " Your " + inventory.pop() + " breaks.";
-    currentWeapon--;
-  }
-}
-
-function getMonsterAttackValue(level) {
-  const hit = (level * 5) - (Math.floor(Math.random() * xp));
-  console.log(hit);
-  return hit > 0 ? hit : 0;
-}
-
-function isMonsterHit() {
-  return Math.random() > .2 || health < 20;
-}
-
-function dodge() {
-  text.innerText = "You dodge the attack from the " + monsters[fighting].name;
-}
-
-function defeatMonster() {
-  gold += Math.floor(monsters[fighting].level * 6.7);
-  xp += monsters[fighting].level;
-  goldText.innerText = gold;
-  xpText.innerText = xp;
-  update(locations[4]);
-}
-
-function lose() {
-  update(locations[5]);
-}
-
-function winGame() {
-  update(locations[6]);
-}
-
-function restart() {
-  xp = 0;
-  health = 100;
-  gold = 50;
-  currentWeapon = 0;
-  inventory = ["stick"];
-  goldText.innerText = gold;
-  healthText.innerText = health;
-  xpText.innerText = xp;
-  goTown();
-}
-
-function easterEgg() {
-  update(locations[7]);
-}
-
-function pickTwo() {
-  pick(2);
-}
-
-function pickEight() {
-  pick(8);
-}
-
-function pick(guess) {
-  const numbers = [];
-  while (numbers.length < 10) {
-    numbers.push(Math.floor(Math.random() * 11));
-  }
-  text.innerText = "You picked " + guess + ". Here are the random numbers:\n";
-  for (let i = 0; i < 10; i++) {
-    text.innerText += numbers[i] + "\n";
-  }
-  if (numbers.includes(guess)) {
-    text.innerText += "Right! You win 20 gold!";
-    gold += 20;
-    goldText.innerText = gold;
-  } else {
-    text.innerText += "Wrong! You lose 10 health!";
-    health -= 10;
-    healthText.innerText = health;
-    if (health <= 0) {
-      lose();
-    }
-  }
+refreshInventory();
+updateEquipmentHTML();
+revertColor(equipmentList, "white");
 }
 
